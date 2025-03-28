@@ -28,15 +28,22 @@ def create_repo(repo_name: str, repo_directory: str) -> None:
     # Start up the templating system
     env = Environment(loader=FileSystemLoader("templates"))
 
+    # Walk through the templates directory
+    for root, _, files in os.walk("templates"):
+        for file in files:
+            template_path = os.path.join(root, file)
+            relative_path = os.path.relpath(template_path, "templates")
+            output_path = os.path.join(repo_directory, relative_path)
 
-    # Add a README file
-    readme_path = os.path.join(repo_directory, "README.md")
-    template = env.get_template("README.md")
-    rendered = template.render(
-        repo_name=repo_name,
-        generated_on=date.today().isoformat()
-    )
+            # Ensure the output directory exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    with open(readme_path, "w") as f:
-        f.write(rendered + "\n")
-    
+            # Render the template and write to the output file
+            template = env.get_template(relative_path)
+            rendered = template.render(
+                repo_name=repo_name,
+                generated_on=date.today().isoformat()
+            )
+
+            with open(output_path, "w") as f:
+                f.write(rendered + "\n")
