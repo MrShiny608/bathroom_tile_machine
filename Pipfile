@@ -7,6 +7,7 @@ name = "pypi"
 click = "*"
 gitpython = "*"
 pyyaml = "*"
+jinja2 = "*"
 
 [dev-packages]
 

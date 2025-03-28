@@ -1,0 +1,15 @@
+{
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[python]": {
+    "editor.tabSize": 4
+  },
+  "editor.tabSize": 2,
+  "editor.indentSize": "tabSize"
+}
