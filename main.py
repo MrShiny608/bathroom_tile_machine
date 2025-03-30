@@ -1,80 +1,109 @@
 import click
-from typing import Optional, TypeVar
+from typing import Any
 import yaml
+from functools import wraps
 
 from git import repo
+from typing import Callable
 
 
-def load_config(path: str) -> dict:
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
-
-
-T = TypeVar("T")
-
-
-def load_parameter(
-    config_file: dict,
-    command_line: Optional[T],
-    config_key: str,
-    prompt: str,
-    default: T,
-) -> T:
+class Config(object):
     """
-    Loads a parameter value based on a priority order: command line argument,
-    configuration file, or user input prompt.
+    A class to handle configuration data loaded from a YAML file.
+
+    This class provides methods to access configuration data using dictionary-like
+    syntax and checks for the existence of keys.
+
+    Methods:
+        __init__():
+            Initializes the Config object by loading data from a ".config.yaml" file.
+
+        __getitem__(key: str) -> Any:
+            Retrieves the value associated with the given key from the configuration data.
+            Args:
+                key (str): The key to look up in the configuration data.
+            Returns:
+                Any: The value associated with the key, or None if the key does not exist.
+
+        __contains__(key: str) -> bool:
+            Checks if a given key exists in the configuration data.
+            Args:
+                key (str): The key to check for existence.
+            Returns:
+                bool: True if the key exists, False otherwise.
+    """
+
+    def __init__(self):
+        with open(".config.yaml", "r") as file:
+            self.data = yaml.safe_load(file)
+
+    def __getitem__(self, key: str) -> Any:
+        return self.data.get(key)
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.data
+
+
+def resolve_parameter(config_key: str, description: str, default: Any) -> Callable:
+    """
+    A decorator to resolve parameter values based on a precedence order:
+    1. Command line parameter
+    2. Configuration file
+    3. Prompt user for input
+    4. Default value
 
     Args:
-        config_file (dict): A dictionary containing configuration key-value pairs.
-        command_line (Optional[Any]): The value provided via the command line argument.
-                                      This has the highest priority.
         config_key (str): The key to look up in the configuration file.
-        prompt (str): The message to display when prompting the user for input.
-        default (Optional[Any]): The default value to use if no input is provided.
+        description (str): The message to display when describing the input.
+        default (Any): The default value to use if no input is provided.
 
     Returns:
-        Any: The resolved parameter value based on the priority order.
+        Callable: A decorator function that wraps the target function.
     """
 
-    # Command line argument is highest priority
-    if command_line is not None:
-        return command_line
+    def decorator(func: Callable) -> Callable:
+        # Wrap the function with click.option to handle command-line arguments
+        func = click.option(f"--{config_key.replace('_', '-')}", help=description, default=None)(func)
 
-    # Config file value is second priority
-    if config_key in config_file:
-        return config_file[config_key]
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # If the command-line parameter is provided, use it
+            if kwargs.get(config_key) is not None:
+                return func(*args, **kwargs)
 
-    # Prompt the user for input
-    return click.prompt(prompt, type=type(default), default=default)
+            # Otherwise, load the configuration file and resolve the parameter
+            ctx = click.get_current_context()
+            config = ctx.ensure_object(Config)
+
+            # Check if the config file has the parameter
+            if config_key in config:
+                kwargs[config_key] = config[config_key]
+                return func(*args, **kwargs)
+
+            # Prompt the user for input as config file doesn't have the parameter
+            kwargs[config_key] = click.prompt(f"Please enter {description}", type=type(default), default=default)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 @click.command()
-@click.option("--repo_name", help="The name of the new repository")
-@click.option("--repo_directory", help="The directory where the repository will be created")
+@resolve_parameter(
+    config_key="repo_name",
+    description="the name of the new repository",
+    default="bathroom_tiles",
+)
+@resolve_parameter(
+    config_key="repo_directory",
+    description="the directory where the repository will be created",
+    default="./bathroom_tiles",
+)
 def create_repo(repo_name: str, repo_directory: str) -> None:
     """
     Create a new Git repository.
     """
-
-    # Load the configuration file
-    config = load_config(".config.yaml")
-
-    # Get parameters
-    repo_name = load_parameter(
-        config,
-        repo_name,
-        config_key="repo_name",
-        prompt="Please enter the name of the new repository",
-        default="my_repo",
-    )
-
-    repo_directory = load_parameter(
-        config,
-        repo_directory,
-        config_key="repo_directory",
-        prompt="Please enter the directory where the repository will be created",
-        default="./my_repo",
-    )
 
     # Call the function to create the repository
     repo.create_repo(repo_name, repo_directory)
