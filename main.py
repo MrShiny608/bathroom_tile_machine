@@ -75,7 +75,7 @@ def resolve_parameter(config_key: str, description: str, default: Callable, pars
                 ctx = click.get_current_context()
                 config = ctx.ensure_object(Config)
 
-                if config_key in config and config[config_key] is None:
+                if config_key in config and config[config_key] is not None:
                     # If the config file has the parameter, use that
                     kwargs[config_key] = config[config_key]
                 else:
