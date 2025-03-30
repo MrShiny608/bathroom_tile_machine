@@ -10,6 +10,13 @@
   "[python]": {
     "editor.tabSize": 4
   },
+  "flake8.args": [
+    "--config=.flake8",
+  ],
+  "flake8.importStrategy": "fromEnvironment",
   "editor.tabSize": 2,
-  "editor.indentSize": "tabSize"
+  "editor.indentSize": "tabSize",
+  "files.exclude": {
+    "**/__pycache__/**": true
+  }
 }
