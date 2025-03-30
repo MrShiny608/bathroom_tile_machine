@@ -5,6 +5,8 @@ import yaml
 from functools import wraps
 
 from actions.create_repo import create_repo
+from actions.generate_commit_timestamps import generate_commit_timestamps
+from actions.generate_commit_message import generate_commit_message
 from git.git import Git
 from git.config import get_user_name, get_user_email
 
@@ -147,6 +149,23 @@ def main(username: str, email: str, from_date: datetime.date, to_date: datetime.
     # Call the function to create the repository
     initial_commit_datetime = datetime.datetime.combine(from_date, datetime.datetime.now().time())
     create_repo(git, name, directory, initial_commit_datetime)
+
+    # Generate the fake commits
+    for commit_timestamp in generate_commit_timestamps(
+        from_date,
+        to_date,
+        min_days_per_week=3,
+        max_days_per_week=4,
+        include_weekends=False,
+        min_per_day=1,
+        max_per_day=5,
+        include_out_of_hours=True,
+    ):
+        # Generate a commit message
+        message = generate_commit_message()
+
+        # Finally, commit it
+        git.commit(commit_timestamp, message)
 
 
 if __name__ == "__main__":
