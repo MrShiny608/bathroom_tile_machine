@@ -1,3 +1,4 @@
+import datetime
 import click
 from typing import Any, Callable
 import yaml
@@ -45,7 +46,7 @@ class Config(object):
         return key in self.data
 
 
-def resolve_parameter(config_key: str, description: str, default: Callable) -> Callable:
+def resolve_parameter(config_key: str, description: str, default: Callable, parser: Callable) -> Callable:
     """
     A decorator to resolve parameter values based on a precedence order:
     1. Command line parameter
@@ -69,23 +70,27 @@ def resolve_parameter(config_key: str, description: str, default: Callable) -> C
         @wraps(func)
         def wrapper(*args, **kwargs):
             # If the command-line parameter is provided, use it
-            if kwargs.get(config_key) is not None:
-                return func(*args, **kwargs)
+            if kwargs.get(config_key) is None:
+                # Otherwise, load the configuration file and resolve the parameter
+                ctx = click.get_current_context()
+                config = ctx.ensure_object(Config)
 
-            # Otherwise, load the configuration file and resolve the parameter
-            ctx = click.get_current_context()
-            config = ctx.ensure_object(Config)
+                if config_key in config and config[config_key] is None:
+                    # If the config file has the parameter, use that
+                    kwargs[config_key] = config[config_key]
+                else:
+                    # Otherwise, prompt the user for input as config file doesn't have the parameter
+                    default_value = default()
 
-            # Check if the config file has the parameter
-            if config_key in config and config[config_key] is not None:
-                kwargs[config_key] = config[config_key]
-                return func(*args, **kwargs)
+                    kwargs[config_key] = click.prompt(
+                        f"Please enter {description}",
+                        type=type(default_value),
+                        default=default_value,
+                    )
 
-            # We may need the default now, so call the default resolver function
-            default_value = default()
+            # Parse the parameter using the provided parser function
+            kwargs[config_key] = parser(kwargs[config_key])
 
-            # Prompt the user for input as config file doesn't have the parameter
-            kwargs[config_key] = click.prompt(f"Please enter {description}", type=type(default_value), default=default_value)
             return func(*args, **kwargs)
 
         return wrapper
@@ -98,33 +103,50 @@ def resolve_parameter(config_key: str, description: str, default: Callable) -> C
     config_key="username",
     description="the name of user who should be attributed to the commits",
     default=get_user_name,
+    parser=lambda x: x,
 )
 @resolve_parameter(
     config_key="email",
     description="the email of user who should be attributed to the commits",
     default=get_user_email,
+    parser=lambda x: x,
 )
 @resolve_parameter(
-    config_key="repo_name",
+    config_key="from_date",
+    description="the date from which the commits should be attributed in iso8601 format",
+    default=lambda: (datetime.date.today() - datetime.timedelta(weeks=52, days=1)).isoformat(),
+    parser=datetime.date.fromisoformat,
+)
+@resolve_parameter(
+    config_key="to_date",
+    description="the date to which the commits should be attributed in iso8601 format",
+    default=lambda: (datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
+    parser=datetime.date.fromisoformat,
+)
+@resolve_parameter(
+    config_key="name",
     description="the name of the new repository",
     default=lambda: "bathroom_tiles",
+    parser=lambda x: x,
 )
 @resolve_parameter(
-    config_key="repo_directory",
+    config_key="directory",
     description="the directory where the repository will be created",
     default=lambda: "./bathroom_tiles",
+    parser=lambda x: x,
 )
-def main(username: str, email: str, repo_name: str, repo_directory: str) -> None:
+def main(username: str, email: str, from_date: datetime.date, to_date: datetime.datetime, name: str, directory: str) -> None:
     # Initialise git object
     git = Git(
         username,
         email,
-        repo_name,
-        repo_directory,
+        name,
+        directory,
     )
 
     # Call the function to create the repository
-    create_repo(git, name=repo_name, directory=repo_directory)
+    initial_commit_datetime = datetime.datetime.combine(from_date, datetime.datetime.now().time())
+    create_repo(git, name, directory, initial_commit_datetime)
 
 
 if __name__ == "__main__":

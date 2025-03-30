@@ -1,4 +1,3 @@
-from datetime import date
 import datetime
 import os
 
@@ -7,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from git.git import Git
 
 
-def create_repo(git: Git, name: str, directory: str) -> None:
+def create_repo(git: Git, name: str, directory: str, at: datetime.datetime) -> None:
     """
     Create a new Git repository in the specified working directory.
 
@@ -43,8 +42,8 @@ def create_repo(git: Git, name: str, directory: str) -> None:
             # Render the template and write to the output file
             template = env.get_template(relative_path)
             rendered = template.render(
-                name=name,
-                generated_on=date.today().isoformat(),
+                repo_name=name,
+                generated_on=datetime.date.today().isoformat(),
             )
 
             with open(output_path, "w") as f:
@@ -53,7 +52,4 @@ def create_repo(git: Git, name: str, directory: str) -> None:
     # Stage the files for initial commit
     git.stage()
 
-    git.commit(
-        at=datetime.datetime.fromisoformat("2024-09-02T10:00:00"),
-        message="feat: Initial commit",
-    )
+    git.commit(at, "feat: Initial commit")
