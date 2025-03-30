@@ -1,2 +1,8 @@
 name: "bathroom_tiles"
 directory: "./bathroom_tiles"
+min_days_per_week: 3
+max_days_per_week: 5
+include_weekends: false
+min_per_day: 1
+max_per_day: 10
+include_out_of_hours: true
