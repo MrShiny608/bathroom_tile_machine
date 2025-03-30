@@ -8,7 +8,7 @@
 
 ## ⚠️ Disclaimer
 
-This repository was generated **automatically** using a script and contains **synthetic commit history**.  
+This repository was generated **automatically** using a script and contains **synthetic commit history**.
 It is intended for **educational, experimental, and satirical purposes only**.
 
 Do **not** use this to misrepresent your actual contributions on GitHub or in professional contexts — doing so may be considered misleading or fraudulent.
