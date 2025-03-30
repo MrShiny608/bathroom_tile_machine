@@ -1,10 +1,11 @@
 import click
-from typing import Any
+from typing import Any, Callable
 import yaml
 from functools import wraps
 
-from git import repo
-from typing import Callable
+from actions.create_repo import create_repo
+from git.git import Git
+from git.config import get_user_name, get_user_email
 
 
 class Config(object):
@@ -44,7 +45,7 @@ class Config(object):
         return key in self.data
 
 
-def resolve_parameter(config_key: str, description: str, default: Any) -> Callable:
+def resolve_parameter(config_key: str, description: str, default: Callable) -> Callable:
     """
     A decorator to resolve parameter values based on a precedence order:
     1. Command line parameter
@@ -76,12 +77,15 @@ def resolve_parameter(config_key: str, description: str, default: Any) -> Callab
             config = ctx.ensure_object(Config)
 
             # Check if the config file has the parameter
-            if config_key in config:
+            if config_key in config and config[config_key] is not None:
                 kwargs[config_key] = config[config_key]
                 return func(*args, **kwargs)
 
+            # We may need the default now, so call the default resolver function
+            default_value = default()
+
             # Prompt the user for input as config file doesn't have the parameter
-            kwargs[config_key] = click.prompt(f"Please enter {description}", type=type(default), default=default)
+            kwargs[config_key] = click.prompt(f"Please enter {description}", type=type(default_value), default=default_value)
             return func(*args, **kwargs)
 
         return wrapper
@@ -91,23 +95,37 @@ def resolve_parameter(config_key: str, description: str, default: Any) -> Callab
 
 @click.command()
 @resolve_parameter(
+    config_key="username",
+    description="the name of user who should be attributed to the commits",
+    default=get_user_name,
+)
+@resolve_parameter(
+    config_key="email",
+    description="the email of user who should be attributed to the commits",
+    default=get_user_email,
+)
+@resolve_parameter(
     config_key="repo_name",
     description="the name of the new repository",
-    default="bathroom_tiles",
+    default=lambda: "bathroom_tiles",
 )
 @resolve_parameter(
     config_key="repo_directory",
     description="the directory where the repository will be created",
-    default="./bathroom_tiles",
+    default=lambda: "./bathroom_tiles",
 )
-def create_repo(repo_name: str, repo_directory: str) -> None:
-    """
-    Create a new Git repository.
-    """
+def main(username: str, email: str, repo_name: str, repo_directory: str) -> None:
+    # Initialise git object
+    git = Git(
+        username,
+        email,
+        repo_name,
+        repo_directory,
+    )
 
     # Call the function to create the repository
-    repo.create_repo(repo_name, repo_directory)
+    create_repo(git, name=repo_name, directory=repo_directory)
 
 
 if __name__ == "__main__":
-    create_repo()
+    main()

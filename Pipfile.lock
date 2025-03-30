@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "005dbaa2f42a7dc93cd71eea7d85f5e0bc7f456ba25aa4618b91940e75483ea6"
+            "sha256": "3b5032d8562f6b6ac1bc019d2db95cab4b24840c0c93baa1ae7aba228c91ff0e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -25,23 +25,6 @@
             "index": "pypi",
             "markers": "python_version >= '3.7'",
             "version": "==8.1.8"
-        },
-        "gitdb": {
-            "hashes": [
-                "sha256:5ef71f855d191a3326fcfbc0d5da835f26b13fbcba60c32c21091c349ffdb571",
-                "sha256:67073e15955400952c6565cc3e707c554a4eea2e428946f7a4c162fab9bd9bcf"
-            ],
-            "markers": "python_version >= '3.7'",
-            "version": "==4.0.12"
-        },
-        "gitpython": {
-            "hashes": [
-                "sha256:9e0e10cda9bed1ee64bc9a6de50e7e38a9c9943241cd7f585f6df3ed28011110",
-                "sha256:c87e30b26253bf5418b01b0660f818967f3c503193838337fe5e573331249269"
-            ],
-            "index": "pypi",
-            "markers": "python_version >= '3.7'",
-            "version": "==3.1.44"
         },
         "jinja2": {
             "hashes": [
@@ -178,14 +161,6 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==6.0.2"
-        },
-        "smmap": {
-            "hashes": [
-                "sha256:26ea65a03958fa0c8a1c7e8c7a58fdc77221b8910f6be2131affade476898ad5",
-                "sha256:b30115f0def7d7531d22a0fb6502488d879e75b260a9db4d0819cfb25403af5e"
-            ],
-            "markers": "python_version >= '3.7'",
-            "version": "==5.0.2"
         }
     },
     "develop": {
