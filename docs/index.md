@@ -1,5 +1,5 @@
 ---
-layout: default
+title: The Bathroom Tile Machine
 ---
 
 # Painting the Bathroom Tiles 🧼🛁
