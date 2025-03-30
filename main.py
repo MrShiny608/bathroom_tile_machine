@@ -153,7 +153,7 @@ def resolve_parameter(config_key: str, description: str, default: Callable, pars
 @resolve_parameter(
     config_key="max_days_per_week",
     description="the maximum number of days per week",
-    default=lambda: 4,
+    default=lambda: 5,
     parser=parsing.parse_int(min=1, max=7),
 )
 @resolve_parameter(
@@ -171,7 +171,7 @@ def resolve_parameter(config_key: str, description: str, default: Callable, pars
 @resolve_parameter(
     config_key="max_per_day",
     description="the maximum number of commits per day",
-    default=lambda: 5,
+    default=lambda: 10,
     parser=parsing.parse_int(min=1, max=1000),
 )
 @resolve_parameter(
