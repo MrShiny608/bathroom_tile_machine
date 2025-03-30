@@ -4,7 +4,7 @@
 
 This project is a commentary on the absurd idea that commit frequency is a reliable measure of developer skill. Spoiler: it's not.
 
-⚠️ **Work in Progress** — things are still being grouted.
+See the [blog post](https://mrshiny608.github.io/bathroom_tile_machine/) for more info!
 
 ## ⚠️ Disclaimer
 
