@@ -39,7 +39,34 @@ verbs = [
     "deconflicted",
 ]
 
-nouns = ["splines", "quantum stabilizer", "flux capacitors", "bitstream", "entropy harmonizer", "cache matrix", "magnetic dampeners", "RAM coils", "photon array", "quantum spaghetti", "time dilation buffer", "turbo encabulator", "data vortex", "entropy deck", "space-time interpolator", "authentication beacons", "neutron form fields", "hypertext membrane", "contextual noise filter", "dependency gears", "pixel buffer", "wormhole branches", "semantic soup", "opcode tree", "chaos engine", "asynchronous timeline"]
+nouns = [
+    "splines",
+    "quantum stabilizer",
+    "flux capacitors",
+    "bitstream",
+    "entropy harmonizer",
+    "cache matrix",
+    "magnetic dampeners",
+    "RAM coils",
+    "photon array",
+    "quantum spaghetti",
+    "time dilation buffer",
+    "turbo encabulator",
+    "data vortex",
+    "entropy deck",
+    "space-time interpolator",
+    "authentication beacons",
+    "neutron form fields",
+    "hypertext membrane",
+    "contextual noise filter",
+    "dependency gears",
+    "pixel buffer",
+    "wormhole branches",
+    "semantic soup",
+    "opcode tree",
+    "chaos engine",
+    "asynchronous timeline",
+]
 
 templates = [
     "{verb} {noun} heroically",
@@ -57,4 +84,5 @@ def generate_commit_message() -> str:
     verb = random.choice(verbs)
     noun = random.choice(nouns)
     template = random.choice(templates)
+
     return f"{commit_type}: {template.format(verb=verb, noun=noun)}"

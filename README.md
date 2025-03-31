@@ -1,5 +1,7 @@
 # Bathroom Tile Machine 🧼
 
+[![Check me out on Linkedin](https://img.shields.io/badge/LinkedIn-0077B5?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/timothybrookes) [![Blog](https://img.shields.io/badge/GitHub%20Pages-View%20Blog-green?logo=github&style=flat-square)](https://mrshiny608.github.io/bathroom_tile_machine/)
+
 **Bathroom Tile Machine** is a satire project that generates a Git repository filled with fake commits — all for the purpose of painting your GitHub contribution graph green like a perfectly tiled bathroom wall.
 
 This project is a commentary on the absurd idea that commit frequency is a reliable measure of developer skill. Spoiler: it's not.

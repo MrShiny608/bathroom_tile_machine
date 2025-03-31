@@ -7,6 +7,13 @@ import click
 
 
 def parse_directory() -> Callable:
+    """
+    Creates a parser function to validate and parse a directory path.
+
+    Returns:
+        Callable: A function that validates and parses a directory path.
+    """
+
     def parse(value: str) -> str:
         # Convert to Path object
         repo_path = Path(value).resolve()
@@ -26,13 +33,13 @@ def parse_directory() -> Callable:
 
 def parse_string(regex: re.Pattern) -> Callable:
     """
-    A function to parse a string based on a given regex pattern.
+    Creates a parser function to validate a string against a regex pattern.
 
     Args:
         regex (re.Pattern): The regex pattern to validate the string.
 
     Returns:
-        Callable: A function that parses the string and checks if it matches the regex.
+        Callable: A function that validates and parses a string.
     """
 
     def parse(value: str) -> str:
@@ -45,6 +52,17 @@ def parse_string(regex: re.Pattern) -> Callable:
 
 
 def parse_date(min: datetime.date, max: datetime.date) -> Callable:
+    """
+    Creates a parser function to validate and parse a date string.
+
+    Args:
+        min (datetime.date): The minimum allowable date.
+        max (datetime.date): The maximum allowable date.
+
+    Returns:
+        Callable: A function that validates and parses a date string.
+    """
+
     def parse(value: str) -> datetime.date:
         try:
             parsed_values = datetime.date.fromisoformat(value)
@@ -60,6 +78,17 @@ def parse_date(min: datetime.date, max: datetime.date) -> Callable:
 
 
 def parse_int(min: int, max: int) -> Callable:
+    """
+    Creates a parser function to validate and parse an integer.
+
+    Args:
+        min (int): The minimum allowable integer value.
+        max (int): The maximum allowable integer value.
+
+    Returns:
+        Callable: A function that validates and parses an integer.
+    """
+
     def parse(value: str) -> int:
         try:
             parsed_value = int(value)
@@ -75,6 +104,13 @@ def parse_int(min: int, max: int) -> Callable:
 
 
 def parse_bool() -> Callable:
+    """
+    Creates a parser function to validate and parse a boolean value.
+
+    Returns:
+        Callable: A function that validates and parses a boolean value.
+    """
+
     def parse(value: str) -> bool:
         if value.lower() in ["true", "1"]:
             return True
