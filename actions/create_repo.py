@@ -49,7 +49,6 @@ def create_repo(git: Git, name: str, directory: str, at: datetime.datetime) -> N
             with open(output_path, "w") as f:
                 f.write(rendered + "\n")
 
-    # Stage the files for initial commit
+    # Make the initial commit
     git.stage()
-
     git.commit(at, "feat: Initial commit")

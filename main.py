@@ -106,11 +106,8 @@ def main(
         directory,
     )
 
-    # Call the function to create the repository
-    initial_commit_datetime = datetime.datetime.combine(from_date, datetime.datetime.now().time())
-    create_repo(git, name, directory, initial_commit_datetime)
-
     # Generate the fake commits
+    initial_commit = True
     for commit_timestamp in generate_commit_timestamps(
         from_date,
         to_date,
@@ -121,11 +118,16 @@ def main(
         max_per_day=max_per_day,
         include_out_of_hours=include_out_of_hours,
     ):
-        # Generate a commit message
-        message = generate_commit_message()
+        if initial_commit:
+            # First create the repository
+            create_repo(git, name, directory, commit_timestamp)
+            initial_commit = False
+        else:
+            # Generate a commit message
+            message = generate_commit_message()
 
-        # Finally, commit it
-        git.commit(commit_timestamp, message)
+            # Finally, commit it
+            git.commit(commit_timestamp, message)
 
 
 if __name__ == "__main__":
